@@ -20,11 +20,19 @@ return function (App $app) {
       }
       // verify password.
       if (!password_verify($input['password'],$user[0]['password'])) {
-          return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.');
+          return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);
       }
       $settings = $this->get('settings'); // get settings array.
       $token = JWT::encode(['id' => $user[0]['id'], 'user' => $user[0]['user']], $settings['jwt']['secret'], "HS256");
       return $this->response->withJson(['token' => $token]);
+    });
+
+    $app->get('/api/[{name}]', function (Request $request, Response $response, array $args) use ($container) {
+        // Sample log message
+        $container->get('logger')->info("SECURE '/' route");
+
+        // Render index view
+        return $container->get('renderer')->render($response, 'index.phtml', $args);
     });
 
     $app->get('/[{name}]', function (Request $request, Response $response, array $args) use ($container) {
