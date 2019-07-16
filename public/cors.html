@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, shrink-to-fit=no, width=device-width" name="viewport">
+
+    <title>FormsEngine</title>
+
+    <!-- CSS -->
+    <!-- Add Material font (Roboto) and Material icon as needed -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i|Roboto+Mono:300,400,700|Roboto+Slab:300,400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Add Material CSS, replace Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daemonite-material@4.1.1/css/material.min.css">
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+    <!-- Then Material JavaScript on top of Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/daemonite-material@4.1.1/js/material.min.js"></script>
+
+    <!-- FormsEngine JS -->
+    <script>
+      $(document).ready(function() {
+        $('#hello_user').click(function(){
+          $.ajax({
+              contentType: 'application/json',
+              success: function(answer){
+                $('#msg').text(answer)
+              },
+              error: function(error){
+                $('#msg').text(error)
+              },
+              processData: false,
+              type: 'GET',
+              url: 'http://localhost:8001/api/'+$('#user').val()
+          });
+        });
+        (function ($) {
+          $.fn.formJSON = function () {
+              var o = {};
+              var a = this.find(':input');
+              $.each(a, function () {
+                if (this.type !== 'button' &&
+                    this.type !== 'submit' &&
+                    this.type !== 'reset'){
+                  if (!o[this.name]) {
+                    if (this.type!=='radio' &&
+                        this.type!=='checkbox'){
+                        o[this.name] = this.value || '';
+                    }
+                    else {
+                      if ($(this).is(":checked")){
+                        o[this.name] = this.value;
+                      }
+                      else {
+                        o[this.name] = '';
+                      }
+                    }
+                  }
+                }
+              });
+              return o;
+          };
+        })(jQuery);
+
+        $('.forms-engine__form').submit(function(event) {
+          event.preventDefault();
+          var data = $(this).formJSON();
+          var url = $(this).attr('action');
+          var method = $(this).attr('method') || 'PUT';
+
+          $.ajax({
+              contentType: 'application/json',
+              data: JSON.stringify(data),
+              success: function(answer){
+                $('#msg').text(answer);
+                console.log('success',answer);
+              },
+              error: function(error){
+                $('#msg').text(error);
+                console.log('error',error);
+              },
+              processData: false,
+              type: method,
+              url: url
+          });
+        });
+      });
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+        <span class="navbar-brand">FormsEngine <small>CORS</small></span>
+    </div>
+</nav>
+
+<!-- content -->
+<div class="container">
+  <div class="card mb-3">
+      <div class="card-body">
+        <h5>CORS Test</h5>
+        <pre id="msg"></pre>
+        <form class="forms-engine__form" action="http://localhost:8001/login" method="post">
+          <div class="form-group">
+            <label for="user">user</label>
+            <input
+              type="text"
+              class="form-control"
+              id="user"
+              name="user">
+          </div>
+          <div class="form-group">
+            <label for="password">password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password">
+          </div>
+          <button type="submit" id="submit" class="btn btn-primary">login</button>
+          <button type="button" id="hello_user" class="btn btn-secondary">hello user</button>
+        </form>
+      </div>
+  </div>
+</div>
+
+</body>
+</html>
