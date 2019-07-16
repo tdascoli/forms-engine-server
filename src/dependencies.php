@@ -24,13 +24,6 @@ return function (App $app) {
     $container['db'] = function ($c) {
         $settings = $c->get('settings')['db'];
         $db = \SleekDB\SleekDB::store('users', $settings['dir']);
-        /*
-        $db->insert([
-            'name' => 'FormsEngine Server',
-            'user' => 'forms',
-            'password' => password_hash('1234567890',PASSWORD_DEFAULT)
-        ]);
-        */
         return $db;
     };
 };
