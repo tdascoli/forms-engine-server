@@ -19,4 +19,11 @@ return function (App $app) {
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
         return $logger;
     };
+
+    // db
+    $container['db'] = function ($c) {
+        $settings = $c->get('settings')['db'];
+        $db = \SleekDB\SleekDB::store('users', $settings['dir']);
+        return $db;
+    };
 };
